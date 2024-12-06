@@ -1,0 +1,56 @@
+name: Lint, Build, and Test Contracts
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: lint
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.8.5"
+
+      - name: Run lint
+        run: scarb fmt --check
+
+  build:
+    runs-on: ubuntu-latest
+    name: build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.8.5"
+
+      - name: Run build
+        run: scarb build
+
+  test:
+    runs-on: ubuntu-latest
+    name: tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@main
+
+      - name: Set up Scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.8.5"
+
+      - name: Set up snforge
+        uses: foundry-rs/setup-snfoundry@v3
+        with:
+          starknet-foundry-version: "0.33.0"
+
+      - name: Run tests
+        run: snforge test
